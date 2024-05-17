@@ -61,6 +61,7 @@ class SettingsDialog(QtWidgets.QDialog, Ui_Dialog):
 
         # Interface
         self.cb_priority_colors.setChecked(settings.value("MessageWidget/priority_color", type=bool))
+        self.cb_image_urls.setChecked(settings.value("MessageWidget/image_urls", type=bool))
         self.cb_locale.setChecked(settings.value("locale", type=bool))
         self.cb_sort_applications.setChecked(settings.value("ApplicationModel/sort", type=bool))
 
@@ -212,6 +213,7 @@ class SettingsDialog(QtWidgets.QDialog, Ui_Dialog):
 
         # Interface
         self.connect_signal(self.cb_priority_colors.stateChanged, self.cb_priority_colors)
+        self.connect_signal(self.cb_image_urls.stateChanged, self.cb_image_urls)
         self.connect_signal(self.cb_locale.stateChanged, self.cb_locale)
         self.connect_signal(self.cb_sort_applications.stateChanged, self.cb_sort_applications)
 
@@ -251,6 +253,7 @@ class SettingsDialog(QtWidgets.QDialog, Ui_Dialog):
 
         # Interface
         self.set_value("MessageWidget/priority_color", self.cb_priority_colors.isChecked(), self.cb_priority_colors)
+        self.set_value("MessageWidget/image_urls", self.cb_image_urls.isChecked(), self.cb_image_urls)
         self.set_value("locale", self.cb_locale.isChecked(), self.cb_locale)
         self.set_value("ApplicationModel/sort", self.cb_sort_applications.isChecked(), self.cb_sort_applications)
 

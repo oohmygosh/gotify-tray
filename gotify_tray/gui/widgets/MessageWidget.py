@@ -50,7 +50,8 @@ class MessageWidget(QtWidgets.QWidget, Ui_Form):
 
         # If the message is only an image URL, then instead of showing the message,
         # download the image and show it in the message label
-        if image_url := extract_image(message.message):
+        image_url = extract_image(message.message) if settings.value("MessageWidget/image_urls", type=bool) else ""
+        if image_url:
             downloader = Downloader()
             filename = downloader.get_filename(image_url)
             self.set_message_image(filename)

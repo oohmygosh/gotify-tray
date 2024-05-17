@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>415</width>
-    <height>446</height>
+    <width>442</width>
+    <height>530</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -138,6 +138,13 @@
             </property>
             <property name="text">
              <string>Show message priority colors</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="cb_image_urls">
+            <property name="text">
+             <string>Show image urls as images</string>
             </property>
            </widget>
           </item>
@@ -594,10 +601,29 @@
   <tabstop>spin_priority</tabstop>
   <tabstop>spin_duration</tabstop>
   <tabstop>cb_notify</tabstop>
+  <tabstop>cb_notification_click</tabstop>
+  <tabstop>cb_tray_icon_unread</tabstop>
+  <tabstop>cb_priority_colors</tabstop>
+  <tabstop>cb_image_urls</tabstop>
+  <tabstop>cb_locale</tabstop>
+  <tabstop>cb_sort_applications</tabstop>
   <tabstop>pb_change_server_info</tabstop>
+  <tabstop>pb_reset_fonts</tabstop>
   <tabstop>pb_font_message_title</tabstop>
   <tabstop>pb_font_message_date</tabstop>
   <tabstop>pb_font_message_content</tabstop>
+  <tabstop>pb_reset</tabstop>
+  <tabstop>pb_import</tabstop>
+  <tabstop>pb_export</tabstop>
+  <tabstop>groupbox_image_popup</tabstop>
+  <tabstop>spin_popup_w</tabstop>
+  <tabstop>spin_popup_h</tabstop>
+  <tabstop>groupbox_watchdog</tabstop>
+  <tabstop>spin_watchdog_interval</tabstop>
+  <tabstop>pb_clear_cache</tabstop>
+  <tabstop>pb_open_cache_dir</tabstop>
+  <tabstop>combo_logging</tabstop>
+  <tabstop>pb_open_log</tabstop>
  </tabstops>
  <resources/>
  <connections>
