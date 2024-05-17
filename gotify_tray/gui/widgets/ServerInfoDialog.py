@@ -44,18 +44,16 @@ class ServerInfoDialog(QtWidgets.QDialog, Ui_Dialog):
         self.task.incorrect_url.connect(self.incorrect_url_callback)
         self.task.start()
 
-    def server_info_success(self, version: GotifyVersionModel):
+    def server_info_success(self):
         self.pb_test.setEnabled(True)
-        self.label_server_info.setText(f"Version: {version.version}")
         update_widget_property(self.pb_test, "state", "success")
         update_widget_property(self.line_token, "state", "success")
         update_widget_property(self.line_url, "state", "success")
         self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Ok).setEnabled(True)
         self.buttonBox.button(QtWidgets.QDialogButtonBox.StandardButton.Ok).setFocus()
 
-    def incorrect_token_callback(self, version: GotifyVersionModel):
+    def incorrect_token_callback(self):
         self.pb_test.setEnabled(True)
-        self.label_server_info.setText(f"Version: {version.version}")
         update_widget_property(self.pb_test, "state", "failed")
         update_widget_property(self.line_token, "state", "failed")
         update_widget_property(self.line_url, "state", "success")

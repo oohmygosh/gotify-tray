@@ -171,8 +171,8 @@ class ProcessMessageTask(BaseTask):
 
 
 class VerifyServerInfoTask(BaseTask):
-    success = pyqtSignal(GotifyVersionModel)
-    incorrect_token = pyqtSignal(GotifyVersionModel)
+    success = pyqtSignal()
+    incorrect_token = pyqtSignal()
     incorrect_url = pyqtSignal()
 
     def __init__(self, url: str, client_token: str):
@@ -184,21 +184,16 @@ class VerifyServerInfoTask(BaseTask):
         try:
             gotify_client = gotify.GotifyClient(self.url, self.client_token)
 
-            version = gotify_client.version()
-            if isinstance(version, gotify.GotifyErrorModel):
-                self.incorrect_url.emit()
-                return
-
             result = gotify_client.get_messages(limit=1)
 
             if isinstance(result, gotify.GotifyPagedMessagesModel):
-                self.success.emit(version)
+                self.success.emit()
                 return
             elif (
                 isinstance(result, gotify.GotifyErrorModel)
                 and result["error"] == "Unauthorized"
             ):
-                self.incorrect_token.emit(version)
+                self.incorrect_token.emit()
                 return
             self.incorrect_url.emit()
         except Exception as e:
