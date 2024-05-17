@@ -18,7 +18,6 @@ def set_theme(app: QtWidgets.QApplication):
     with open(get_abs_path(f"gotify_tray/gui/themes/{theme}/style.qss"), "r") as f:
         stylesheet += f.read()
 
-    app.setPalette(app.style().standardPalette())
     app.setStyleSheet(stylesheet)
 
 
