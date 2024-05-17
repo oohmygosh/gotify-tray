@@ -391,6 +391,7 @@ class MainApplication(QtWidgets.QApplication):
 def start_gui():
     app = MainApplication(sys.argv)
     app.setApplicationName(title)
+    app.setDesktopFileName("gotifytray.desktop")
     app.setQuitOnLastWindowClosed(False)
     app.setWindowIcon(QtGui.QIcon(get_icon("gotify-small")))
     app.setStyle("fusion")
