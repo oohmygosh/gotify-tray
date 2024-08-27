@@ -15,7 +15,7 @@ with open("version.txt", "r") as f:
 
 # What packages are required for this module to be executed?
 REQUIRED = [
-    'requests==2.31.0', 'pyqt6==6.5.1'
+    'requests==2.32.3', 'pyqt6==6.7.1'
 ]
 
 # What packages are optional?
@@ -84,6 +84,8 @@ setup(
         'License :: OSI Approved :: GNU General Public License v3 (GPLv3)',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.10'
+        'Programming Language :: Python :: 3.10',
+        'Programming Language :: Python :: 3.11',
+        'Programming Language :: Python :: 3.12'
     ]
 )
