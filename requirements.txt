@@ -1,2 +1,2 @@
-requests==2.32.3
-pyqt6==6.7.1
+requests
+pyqt6>=6.7.1
