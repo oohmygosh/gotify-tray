@@ -41,9 +41,6 @@ settings = Settings("gotify-tray")
 logger = logging.getLogger("gotify-tray")
 
 
-title = __title__.replace(" ", "-")
-
-
 def init_logger(logger: logging.Logger):
     if (level := settings.value("logging/level", type=str)) != "Disabled":
         logger.setLevel(level)
@@ -54,7 +51,7 @@ def init_logger(logger: logging.Logger):
     if not os.path.exists(logdir):
         os.mkdir(logdir)
     logging.basicConfig(
-        filename=os.path.join(logdir, f"{title}.log"),
+        filename=os.path.join(logdir, f"{__title__}.log"),
         format="%(levelname)s > %(name)s > %(asctime)s > %(filename)20s:%(lineno)3s - %(funcName)20s() > %(message)s",
     )
 
@@ -390,7 +387,7 @@ class MainApplication(QtWidgets.QApplication):
 
 def start_gui():
     app = MainApplication(sys.argv)
-    app.setApplicationName(title)
+    app.setApplicationName(__title__)
     app.setDesktopFileName("gotifytray.desktop")
     app.setQuitOnLastWindowClosed(False)
     app.setWindowIcon(QtGui.QIcon(get_icon("gotify-small")))
