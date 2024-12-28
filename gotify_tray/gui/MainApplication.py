@@ -2,12 +2,16 @@ import getpass
 import logging
 import os
 import platform
+import re
 import sys
 import tempfile
 
+from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtWidgets import QApplication
+
 from gotify_tray import gotify
-from gotify_tray.__version__ import __title__
 from gotify_tray.database import Downloader, Settings
+from gotify_tray.gui.themes import set_theme
 from gotify_tray.tasks import (
     ClearCacheTask,
     DeleteApplicationMessagesTask,
@@ -19,11 +23,7 @@ from gotify_tray.tasks import (
     ProcessMessageTask,
     ServerConnectionWatchdogTask,
 )
-from gotify_tray.gui.themes import set_theme
 from gotify_tray.utils import get_icon, verify_server
-from PyQt6 import QtCore, QtGui, QtWidgets
-
-from ..__version__ import __title__
 from .models import (
     ApplicationAllMessagesItem,
     ApplicationItemDataRole,
@@ -35,7 +35,7 @@ from .models import (
     MessageItemDataRole,
 )
 from .widgets import ImagePopup, MainWindow, MessageWidget, SettingsDialog, Tray
-
+from ..__version__ import __title__
 
 settings = Settings("gotify-tray")
 logger = logging.getLogger("gotify-tray")
@@ -54,6 +54,21 @@ def init_logger(logger: logging.Logger):
         filename=os.path.join(logdir, f"{__title__}.log"),
         format="%(levelname)s > %(name)s > %(asctime)s > %(filename)20s:%(lineno)3s - %(funcName)20s() > %(message)s",
     )
+
+
+def extract_code_from_sms(sms_text: str):
+    # 定义多个正则表达式模式
+    patterns = [
+        r'验证.*?(\d{4,6})',
+        r'(\d{4,6}).*?验证'
+    ]
+
+    for pattern in patterns:
+        match = re.search(pattern, sms_text)
+        if match:
+            return match.group(1) if len(match.groups()) > 0 else match.group(0)
+
+    return None
 
 
 class MainApplication(QtWidgets.QApplication):
@@ -244,7 +259,9 @@ class MainApplication(QtWidgets.QApplication):
             icon = application_item.icon()
         else:
             icon = QtWidgets.QSystemTrayIcon.MessageIcon.Information
-
+        sms = extract_code_from_sms(message.message)
+        if sms is not None:
+            QApplication.clipboard().setText(sms)
         self.tray.showMessage(
             message.title,
             message.message,
