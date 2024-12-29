@@ -36,3 +36,12 @@ class Downloader(object):
             return ""
 
         return self.cache.store(url, response) if response.ok else ""
+
+    def store_base64(self, key: str, base64_str: str) -> str:
+        """
+        Get the content of an http get request, as a filename.
+        """
+        if filename := self.cache.lookup(key):
+            return filename
+        base_ = self.cache.store_base64(key, base64_str)
+        return base_ if base_ is not None else ""

@@ -7,6 +7,7 @@ import sys
 import tempfile
 
 from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtGui import QIcon
 from PyQt6.QtWidgets import QApplication
 
 from gotify_tray import gotify
@@ -72,6 +73,18 @@ def extract_code_from_sms(sms_text: str):
 
 
 class MainApplication(QtWidgets.QApplication):
+    def __init__(self, argv: list[str]):
+        super().__init__(argv)
+        self.watchdog = None
+        self.main_window = None
+        self.application_proxy_model = None
+        self.application_model = None
+        self.gotify_client = None
+        self.messages_model = None
+        self.downloader = None
+        self.tray = None
+        self.first_connect = None
+
     def init_ui(self):
         self.gotify_client = gotify.GotifyClient(
             settings.value("Server/url", type=str),
@@ -216,7 +229,7 @@ class MainApplication(QtWidgets.QApplication):
                         # A single application is selected
                         # -> Only insert the message if the appid matches the selected appid
                         if (
-                            message.appid 
+                            message.appid
                             == selected_application_item.data(ApplicationItemDataRole.ApplicationRole).id
                         ):
                             self.messages_model.insert_message(0, message)
@@ -236,7 +249,9 @@ class MainApplication(QtWidgets.QApplication):
 
     def new_message_callback(self, message: gotify.GotifyMessageModel, process: bool = True):
         self.add_message_to_model(message, process=process)
-
+        if message.extras is not None and message.extras.get('contentType') == 'image':
+            self.downloader.store_base64(message.title, message.message)
+            return
         # Don't show a notification if it's low priority or the window is active
         if (
             message.priority < settings.value("tray/notifications/priority", type=int)
@@ -254,9 +269,9 @@ class MainApplication(QtWidgets.QApplication):
         # Get the application icon
         if (
             settings.value("tray/notifications/icon/show", type=bool)
-            and (application_item := self.application_model.itemFromId(message.appid))
+            and (application_item := self.downloader.cache.lookup(message.title))
         ):
-            icon = application_item.icon()
+            icon = QIcon(application_item)
         else:
             icon = QtWidgets.QSystemTrayIcon.MessageIcon.Information
         sms = extract_code_from_sms(message.message)
@@ -286,9 +301,9 @@ class MainApplication(QtWidgets.QApplication):
             )
             self.delete_application_messages_task.start()
         elif isinstance(item, ApplicationAllMessagesItem):
-            self.clear_cache_task = ClearCacheTask()        
+            self.clear_cache_task = ClearCacheTask()
             self.clear_cache_task.start()
-        
+
             self.delete_all_messages_task = DeleteAllMessagesTask(self.gotify_client)
             self.delete_all_messages_task.start()
         else:
@@ -363,7 +378,7 @@ class MainApplication(QtWidgets.QApplication):
         self.main_window.image_popup.connect(self.image_popup_callback)
         self.main_window.hidden.connect(self.main_window_hidden_callback)
         self.main_window.activated.connect(self.tray.revert_icon)
-        
+
         self.styleHints().colorSchemeChanged.connect(self.theme_change_requested_callback)
 
         self.messages_model.rowsInserted.connect(self.main_window.display_message_widgets)

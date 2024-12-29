@@ -1,4 +1,6 @@
 from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtGui import QIcon
+
 from ..designs.widget_main import Ui_MainWindow
 from .StatusWidget import StatusWidget
 from ..models import (
@@ -110,7 +112,6 @@ class MainWindow(QtWidgets.QMainWindow, Ui_MainWindow):
                 message: gotify.GotifyMessageModel = self.messages_model.data(index, MessageItemDataRole.MessageRole)
 
                 application_item = self.application_model.itemFromId(message.appid)
-                
                 message_widget = MessageWidget(self.listView_messages, message_item, icon=application_item.icon())
                 message_widget.deletion_requested.connect(self.delete_message.emit)
                 message_widget.image_popup.connect(self.image_popup.emit)

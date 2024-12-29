@@ -1,7 +1,9 @@
+import base64
 import glob
 import logging
 import os
 import uuid
+from io import BytesIO
 
 import requests
 
@@ -62,6 +64,29 @@ class Cache(object):
 
         with open(filepath, "wb") as f:
             f.write(response.content)
+
+        self.cursor.execute(
+            "INSERT INTO cache (url, filename, cached_on) VALUES(?, ?, datetime('now', 'localtime'))",
+            (key, filepath),
+        )
+        self.database.commit()
+        return filepath
+
+    def store_base64(self, key: str, base64_string: str) -> str:
+        # Create a file and store the response contents
+        filepath = os.path.join(self.cache_dir, uuid.uuid4().hex)
+
+        with open(filepath, "wb") as f:
+            if 'data:' in base64_string:
+                base64_data = base64_string.split(',', 1)[1]
+            else:
+                base64_data = base64_string
+            try:
+                # 解码 Base64 字符串为字节
+                image_data = base64.b64decode(base64_data)
+                f.write(image_data)
+            except Exception as e:
+                print(f"Error converting Base64 to image: {e}")
 
         self.cursor.execute(
             "INSERT INTO cache (url, filename, cached_on) VALUES(?, ?, datetime('now', 'localtime'))",

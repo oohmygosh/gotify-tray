@@ -158,7 +158,7 @@ class GotifyClient(GotifySession):
     """
 
     def get_application_messages(
-        self, application_id: int, limit: int = 100, since: int | None = None
+        self, application_id: int, limit: int = 10, since: int | None = None
     ) -> GotifyPagedMessagesModel | GotifyErrorModel:
         response = self._get(
             f"/application/{application_id}/message",
@@ -177,7 +177,7 @@ class GotifyClient(GotifySession):
         return None if response.ok else GotifyErrorModel(response)
 
     def get_messages(
-        self, limit: int = 100, since: int | None = None
+        self, limit: int = 10, since: int | None = None
     ) -> GotifyPagedMessagesModel | GotifyErrorModel:
         response = self._get("/message", params={"limit": limit, "since": since})
         if not response.ok:

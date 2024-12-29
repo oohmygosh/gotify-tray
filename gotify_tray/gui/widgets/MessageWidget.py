@@ -1,6 +1,7 @@
 import os
 
 from PyQt6 import QtCore, QtGui, QtWidgets
+from PyQt6.QtGui import QIcon
 
 from ..models.MessagesModel import MessageItemDataRole, MessagesModelItem
 from ..designs.widget_message import Ui_Form
@@ -10,8 +11,8 @@ from gotify_tray.utils import convert_links, extract_image, update_widget_proper
 from gotify_tray.gui.themes import get_theme_file
 from gotify_tray.gotify.models import GotifyMessageModel
 
-
 settings = Settings("gotify-tray")
+downloader = Downloader()
 
 
 class MessageWidget(QtWidgets.QWidget, Ui_Form):
@@ -19,10 +20,10 @@ class MessageWidget(QtWidgets.QWidget, Ui_Form):
     image_popup = QtCore.pyqtSignal(str, QtCore.QPoint)
 
     def __init__(
-        self,
-        parent: QtWidgets.QWidget,
-        message_item: MessagesModelItem,
-        icon: QtGui.QIcon | None = None,
+            self,
+            parent: QtWidgets.QWidget,
+            message_item: MessagesModelItem,
+            icon: QtGui.QIcon | None = None,
     ):
         super(MessageWidget, self).__init__(parent)
         self.setupUi(self)
@@ -45,14 +46,19 @@ class MessageWidget(QtWidgets.QWidget, Ui_Form):
             date_str = message.date.toString("yyyy-MM-dd, hh:mm")
         self.label_date.setText(date_str)
 
-        if message.get("extras", {}).get("client::display", {}).get("contentType") == "text/markdown":
+        if message.get("extras", {}).get("contentType") == "image":
+            self.label_message.setTextFormat(QtCore.Qt.TextFormat.RichText)
+            filePath = downloader.store_base64(message.title, message.message)
+            icon = QIcon(filePath)
+            message.message = '<img src="' + filePath + '" alt="Image">'
+
+        if message.get("extras", {}).get("contentType", {}) == "text/markdown":
             self.label_message.setTextFormat(QtCore.Qt.TextFormat.MarkdownText)
 
         # If the message is only an image URL, then instead of showing the message,
         # download the image and show it in the message label
         image_url = extract_image(message.message) if settings.value("MessageWidget/image_urls", type=bool) else ""
         if image_url:
-            downloader = Downloader()
             filename = downloader.get_filename(image_url)
             self.set_message_image(filename)
         else:
@@ -127,7 +133,8 @@ class MessageWidget(QtWidgets.QWidget, Ui_Form):
 
     def set_priority_color(self, priority: int):
         if not settings.value("MessageWidget/priority_color", type=bool):
-            self.label_priority.setFixedWidth(0) # set width to 0 instead of hiding, so we still get the content margins
+            self.label_priority.setFixedWidth(
+                0)  # set width to 0 instead of hiding, so we still get the content margins
             return
 
         if priority >= 4 and priority <= 7:
